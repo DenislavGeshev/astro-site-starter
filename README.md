@@ -203,6 +203,23 @@ git push
 
 ---
 
+## Updating dependencies (read before running `npm update` or `npm audit fix`)
+
+A few packages must stay paired with the Astro major version:
+
+| Astro | `@astrojs/react` | `@astrojs/cloudflare` |
+|-------|------------------|------------------------|
+| 5.x   | 4.x              | 12.x                   |
+| 6.x   | 5.x              | 13.x                   |
+
+If you bump one, bump the others to match. A mismatched pair (e.g. Astro 6 with `@astrojs/react` 4) breaks `npm run dev` with cryptic React "Invalid hook call" / `useRef` is null errors during SSR.
+
+**Don't run `npm audit fix --force`** — it upgrades `astro` and the Cloudflare adapter independently and leaves the React adapter behind, breaking the pairing. To address vulnerabilities, update the specific package manually.
+
+If `npm run dev` ever crashes after a dependency change, run `rm -rf node_modules/.vite` to clear Astro's stale build cache, then try again.
+
+---
+
 ## Deploying to Cloudflare
 
 The easiest way is to connect your GitHub repo in the Cloudflare dashboard. See **Part 11** of the build guide for step-by-step instructions.

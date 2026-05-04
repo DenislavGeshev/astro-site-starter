@@ -22,6 +22,22 @@ A marketing website built with Astro. Optimized for performance, SEO, and access
 
 ---
 
+## CRITICAL: Astro 6 ↔ @astrojs/react 5 must stay paired
+
+`@astrojs/react` is versioned per Astro major:
+- Astro 5 → `@astrojs/react` v4
+- Astro 6 → `@astrojs/react` v5
+
+**Never upgrade or downgrade one without the other.** A mismatch (e.g. Astro 6 + `@astrojs/react` 4) causes the dev server to crash with `Cannot read properties of null (reading 'useRef')` / "Invalid hook call" errors during SSR — the renderer and React end up in separate module instances and the hook dispatcher is null.
+
+The same pairing rule applies to `@astrojs/cloudflare` (v13 for Astro 6, v12 for Astro 5).
+
+**Never run `npm audit fix --force`** on this project. It bumps `astro` and `@astrojs/cloudflare` independently and leaves `@astrojs/react` behind, breaking the pairing. If there's a vulnerability, address the specific package manually and bump the React adapter alongside Astro.
+
+If versions ever drift, restore them together and run `rm -rf node_modules/.vite` before `npm run dev` to clear stale Vite SSR optimizer chunks.
+
+---
+
 ## CRITICAL: Use the Astro Docs MCP server
 
 The Astro Docs MCP server is configured in this environment. **ALWAYS** consult it before generating Astro-specific code. Astro APIs evolve quickly and your training data may be out of date. The MCP server gives you real-time access to current documentation.
