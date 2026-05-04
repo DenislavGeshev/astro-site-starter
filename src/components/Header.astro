@@ -1,0 +1,51 @@
+---
+/**
+ * Site header. Renders a logo and the main navigation.
+ *
+ * The desktop nav uses Radix Navigation Menu (in NavMenu.tsx) for full
+ * accessibility, keyboard navigation, screen reader support, focus management.
+ *
+ * Mobile nav uses Radix Dialog as a slide-in drawer (in MobileNav.tsx).
+ *
+ * Both are React islands marked client:idle (interactive but not urgent ,
+ * loads after critical content).
+ */
+import { SITE } from '~/lib/site';
+import NavMenu from '~/components/NavMenu.tsx';
+import MobileNav from '~/components/MobileNav.tsx';
+
+// Single source of truth for nav links. Edit here to update both desktop and mobile nav.
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  // Add more here as you create pages:
+  // { label: 'Pricing', href: '/pricing' },
+  // { label: 'Blog', href: '/blog' },
+];
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-brand-border bg-brand-light/80 backdrop-blur-sm">
+  <div class="container-page flex h-16 items-center justify-between">
+
+    {/* Logo / site name. Replace SVG with your real logo. */}
+    <a
+      href="/"
+      class="flex items-center gap-2 font-bold text-brand-dark transition-opacity hover:opacity-80"
+      aria-label={`${SITE.name} home`}
+    >
+      <img src="/favicon.svg" alt="" width="28" height="28" />
+      <span>{SITE.name}</span>
+    </a>
+
+    {/* Desktop nav, hidden on mobile */}
+    <div class="hidden md:block">
+      <NavMenu client:idle items={navItems} />
+    </div>
+
+    {/* Mobile nav trigger, hidden on desktop */}
+    <div class="md:hidden">
+      <MobileNav client:idle items={navItems} siteName={SITE.name} />
+    </div>
+
+  </div>
+</header>

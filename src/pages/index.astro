@@ -1,0 +1,122 @@
+---
+/**
+ * Homepage.
+ *
+ * Demonstrates the main pieces of the starter:
+ * - BaseLayout for SEO + header + footer
+ * - Hero section with GSAP-animated text
+ * - Latest posts pulled from the CMS
+ * - Accessible FAQ accordion (Radix)
+ * - JSON-LD structured data for SEO
+ *
+ * To pre-render this page as static HTML at build time (recommended for
+ * marketing sites), the `prerender` export below is set to true.
+ */
+
+// Pre-render this page as static HTML at build time. Pages without this
+// export are rendered on-demand at the edge.
+export const prerender = true;
+
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Hero from '~/components/Hero.astro';
+import FAQ from '~/components/FAQ.tsx';
+import AnimatedText from '~/components/AnimatedText.tsx';
+
+import { getAllPosts } from '~/lib/cms';
+import { SITE, absoluteUrl } from '~/lib/site';
+import { organizationSchema, websiteSchema, faqSchema } from '~/lib/jsonld';
+
+// Fetch the 3 most recent posts at build time
+const recentPosts = await getAllPosts(3);
+
+// FAQ items, edit or replace with your own
+const faqItems = [
+  {
+    question: 'Do I need to know how to code to use this starter?',
+    answer:
+      'No. The starter is designed to be customized through Claude Code in plain English. The README has suggested prompts to get you going.',
+  },
+  {
+    question: 'Why Astro instead of Next.js?',
+    answer:
+      'For marketing sites, Astro ships almost no JavaScript by default, which means faster pages and better Google rankings. Next.js is better suited for complex web apps.',
+  },
+  {
+    question: 'Is hosting really free?',
+    answer:
+      'Cloudflare Workers free tier covers 100,000 visits per day with unlimited bandwidth, free SSL, and free custom domains. Most marketing sites stay within this for free indefinitely.',
+  },
+];
+
+// Combine multiple JSON-LD schemas into a graph for the homepage
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    organizationSchema(),
+    websiteSchema(),
+    faqSchema(faqItems),
+  ],
+};
+---
+
+<BaseLayout
+  title={SITE.name}
+  description={SITE.description}
+  jsonLd={jsonLd}
+>
+
+  {/* Hero section */}
+  <Hero />
+
+  {/* Recent posts section. Only renders if there are posts. */}
+  {recentPosts.length > 0 && (
+    <section id="features" class="container-page py-20">
+      <AnimatedText
+        client:visible
+        as="h2"
+        className="text-3xl md:text-4xl font-bold text-center text-brand-dark mb-4"
+      >
+        Latest writing
+      </AnimatedText>
+
+      <AnimatedText
+        client:visible
+        as="p"
+        className="text-center text-brand-muted mb-12 max-w-xl mx-auto"
+        delay={0.1}
+      >
+        Examples pulled from your CMS. Edit src/lib/cms.ts to wire up a real one.
+      </AnimatedText>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {recentPosts.map((post) => (
+          <article class="rounded-lg border border-brand-border bg-white p-6 hover:shadow-md transition-shadow">
+            <time
+              datetime={post.publishedAt}
+              class="text-xs text-brand-muted uppercase tracking-wide"
+            >
+              {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </time>
+            <h3 class="mt-2 text-xl font-semibold text-brand-dark">
+              <a
+                href={`/blog/${post.slug}`}
+                class="hover:text-brand-primary transition-colors"
+              >
+                {post.title}
+              </a>
+            </h3>
+            <p class="mt-3 text-brand-muted">{post.excerpt}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {/* FAQ section */}
+  <FAQ client:visible items={faqItems} />
+
+</BaseLayout>

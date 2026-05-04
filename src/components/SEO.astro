@@ -1,0 +1,137 @@
+---
+/**
+ * SEO meta tags component.
+ *
+ * Renders the full set of meta tags every page needs for good SEO and
+ * social sharing: title, description, canonical, Open Graph, Twitter Cards,
+ * favicon, and optional JSON-LD structured data.
+ *
+ * Used inside BaseLayout. Pass props from each page to customize.
+ *
+ * Usage in a page:
+ *   ---
+ *   import BaseLayout from '~/layouts/BaseLayout.astro';
+ *   ---
+ *   <BaseLayout
+ *     title="About Us"
+ *     description="Learn about our team and mission."
+ *     ogImage="/og/about.png"
+ *   >
+ *     ...page content
+ *   </BaseLayout>
+ */
+import { SITE, absoluteUrl } from '~/lib/site';
+
+export interface Props {
+  /** Page title. Will be combined with site name as: "Title | Site Name" */
+  title: string;
+
+  /** Meta description, 150-160 chars ideal */
+  description?: string;
+
+  /**
+   * Canonical URL path (e.g. "/about"). Will be made absolute.
+   * Defaults to the current URL.
+   */
+  canonical?: string;
+
+  /**
+   * Open Graph image. Can be a path ("/og/about.png") or full URL.
+   * Defaults to SITE.defaultOgImage.
+   * Recommended size: 1200x630 px.
+   */
+  ogImage?: string;
+
+  /** Open Graph type. Defaults to 'website'. Use 'article' for blog posts. */
+  ogType?: 'website' | 'article';
+
+  /**
+   * If true, adds a noindex meta tag so search engines don't index this page.
+   * Use for thank-you pages, drafts, etc.
+   */
+  noindex?: boolean;
+
+  /**
+   * Optional JSON-LD structured data object.
+   * Use the helpers in src/lib/jsonld.ts to build these.
+   */
+  jsonLd?: object;
+}
+
+const {
+  title,
+  description = SITE.description,
+  canonical,
+  ogImage = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+// Build the full title. If the page is the homepage, just use SITE.name.
+const fullTitle = title === SITE.name ? title : `${title} | ${SITE.name}`;
+
+// Build absolute URLs for canonical and og:url.
+const canonicalUrl = canonical
+  ? absoluteUrl(canonical)
+  : new URL(Astro.url.pathname, SITE.url).href.replace(/\/$/, '') || SITE.url;
+
+// og:image must be absolute. If a relative path is given, make it absolute.
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : absoluteUrl(ogImage);
+---
+
+{/* Charset and viewport, must be very early in <head> */}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+{/* Title and description */}
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+
+{/* Canonical URL, prevents duplicate content issues */}
+<link rel="canonical" href={canonicalUrl} />
+
+{/* Robots directive */}
+{noindex ? (
+  <meta name="robots" content="noindex,nofollow" />
+) : (
+  <meta name="robots" content="index,follow" />
+)}
+
+{/* Open Graph (Facebook, LinkedIn, Slack, Discord, etc.) */}
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={ogImageUrl} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content={SITE.locale} />
+
+{/* Twitter Card */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
+{SITE.twitterHandle && (
+  <meta name="twitter:site" content={`@${SITE.twitterHandle}`} />
+)}
+
+{/* Favicon */}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+{/* RSS feed (uncomment when you add one) */}
+{/* <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" /> */}
+
+{/* Sitemap reference */}
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+{/* JSON-LD structured data */}
+{jsonLd && (
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd)}
+  />
+)}
+
+{/* Generator (helpful for showing what built this site) */}
+<meta name="generator" content={Astro.generator} />

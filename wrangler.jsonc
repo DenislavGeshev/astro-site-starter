@@ -1,0 +1,76 @@
+/**
+ * Wrangler configuration. This tells Cloudflare Workers how to deploy your site.
+ * Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * The Astro Cloudflare adapter (@astrojs/cloudflare v13+) handles most of the
+ * deployment config automatically. This file is here so you can add Cloudflare
+ * bindings (KV, R2, D1, etc.) when needed.
+ *
+ * IMPORTANT: When asked to add a Cloudflare binding, Claude should consult
+ * the Astro Docs MCP server and the Cloudflare Workers docs first. Bindings
+ * need both this file AND code changes to work.
+ */
+{
+  // The name of your Worker. Becomes part of the default URL:
+  // https://<name>.<your-subdomain>.workers.dev
+  // Change this to match your project.
+  "name": "marketing-site",
+
+  // Compatibility date. Tells Cloudflare which version of the Workers runtime
+  // to use. Don't change this without a reason, newer dates may have breaking changes.
+  "compatibility_date": "2025-04-15",
+
+  // Required for Astro to work properly on Workers.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Observability: send logs and errors to Cloudflare's dashboard.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+
+  // ============================================================================
+  // OPTIONAL BINDINGS, uncomment and configure as needed
+  // ============================================================================
+
+  // KV Namespace (key-value storage)
+  // Useful for: session storage, simple caching, feature flags
+  // To create: npx wrangler kv:namespace create my-kv
+  //
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "MY_KV",
+  //     "id": "<your-kv-id-from-create-command>"
+  //   }
+  // ],
+
+  // R2 Bucket (object storage for media files)
+  // Useful for: videos, large images, downloadable files
+  // To create: npx wrangler r2 bucket create my-bucket
+  //
+  // "r2_buckets": [
+  //   {
+  //     "binding": "MEDIA",
+  //     "bucket_name": "marketing-site-media"
+  //   }
+  // ],
+
+  // D1 Database (SQLite at the edge)
+  // Useful for: form submissions, user data, simple databases
+  // To create: npx wrangler d1 create my-database
+  //
+  // "d1_databases": [
+  //   {
+  //     "binding": "DB",
+  //     "database_name": "marketing-site-db",
+  //     "database_id": "<your-database-id>"
+  //   }
+  // ],
+
+  // Cloudflare Images binding (required if using imageService: 'cloudflare-binding' in astro.config.mjs)
+  // No setup needed, just enable it.
+  //
+  // "images": {
+  //   "binding": "IMAGES"
+  // }
+}

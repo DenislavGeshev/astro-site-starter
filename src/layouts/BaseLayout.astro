@@ -1,0 +1,87 @@
+---
+/**
+ * BaseLayout, wraps every page.
+ *
+ * Includes the <html>, <head>, header, footer, and global styles. Every page
+ * should use this layout. Pass SEO props to customize meta tags per page.
+ *
+ * Slot rendering: anything inside <BaseLayout>...</BaseLayout> in a page
+ * gets rendered where <slot /> appears below.
+ *
+ * Usage in a page (.astro file):
+ *   ---
+ *   import BaseLayout from '~/layouts/BaseLayout.astro';
+ *   ---
+ *   <BaseLayout title="My Page" description="My page description">
+ *     <h1>My content</h1>
+ *   </BaseLayout>
+ */
+import '~/styles/global.css';
+
+import SEO from '~/components/SEO.astro';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+import SmoothScroll from '~/components/SmoothScroll.tsx';
+import { SITE } from '~/lib/site';
+
+// All SEO-related props pass through to the SEO component.
+export interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: object;
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.locale.split('_')[0]}>
+  <head>
+    <SEO {...props} />
+  </head>
+  <body>
+    {/*
+      SmoothScroll wraps the whole site to enable Lenis smooth scrolling.
+      It's a React component marked client:idle so it loads after critical content.
+      The `client:only="react"` would also work but client:idle hydrates server-rendered output.
+    */}
+    <SmoothScroll client:idle>
+      <Header />
+
+      <main id="main-content">
+        <slot />
+      </main>
+
+      <Footer />
+    </SmoothScroll>
+
+    {/*
+      Skip-to-content link for keyboard users. Visually hidden until focused.
+      Best practice: this should actually be the first thing in <body> so
+      keyboard users can reach it instantly. Move above SmoothScroll if needed.
+    */}
+  </body>
+</html>
+
+<style>
+  /* Skip link styles. Visible only when keyboard-focused. */
+  :global(.skip-link) {
+    position: absolute;
+    left: -9999px;
+    z-index: 999;
+    padding: 1rem 1.5rem;
+    background: var(--color-brand-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 0 0 0.5rem 0;
+  }
+
+  :global(.skip-link:focus) {
+    left: 0;
+    top: 0;
+  }
+</style>

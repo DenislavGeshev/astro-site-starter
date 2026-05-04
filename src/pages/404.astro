@@ -1,0 +1,38 @@
+---
+/**
+ * Custom 404 page.
+ * Cloudflare serves this when a route is not found
+ * (configured in wrangler.jsonc with not_found_handling: "404-page").
+ */
+
+export const prerender = true;
+
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you're looking for doesn't exist."
+  noindex={true}
+>
+  <section class="container-page py-32 text-center">
+
+    <p class="text-7xl font-bold text-brand-primary">404</p>
+
+    <h1 class="mt-4 text-3xl md:text-4xl font-bold text-brand-dark">
+      Page not found
+    </h1>
+
+    <p class="mt-4 text-brand-muted max-w-md mx-auto">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+
+    <a
+      href="/"
+      class="mt-8 inline-flex items-center justify-center px-6 py-3 rounded-lg bg-brand-primary text-white font-medium transition-colors hover:bg-brand-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+    >
+      Back to homepage
+    </a>
+
+  </section>
+</BaseLayout>

@@ -1,0 +1,85 @@
+---
+/**
+ * Hero section.
+ *
+ * Example of how to combine static Astro markup with React islands for
+ * animation. The headline and subheading are server-rendered HTML; the
+ * AnimatedText React island handles the GSAP scroll animation.
+ *
+ * Customize the props or hardcode your own values directly.
+ */
+import AnimatedText from '~/components/AnimatedText.tsx';
+
+interface Props {
+  heading?: string;
+  subheading?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+}
+
+const {
+  heading = 'Build a fast, beautiful marketing site',
+  subheading = 'A production-ready starter with everything you need: Astro, React, Tailwind, Radix UI, GSAP, and Cloudflare Workers. Edit this with Claude Code in plain English.',
+  primaryCta = { label: 'Read the docs', href: '/about' },
+  secondaryCta = { label: 'See an example', href: '#features' },
+} = Astro.props;
+---
+
+<section class="relative overflow-hidden">
+
+  {/* Subtle background gradient, adjust or remove as you like */}
+  <div
+    class="absolute inset-0 -z-10"
+    style="background: radial-gradient(ellipse at top, oklch(0.95 0.04 264) 0%, oklch(0.98 0.005 264) 70%);"
+    aria-hidden="true"
+  />
+
+  <div class="container-page py-24 md:py-32">
+
+    <div class="mx-auto max-w-3xl text-center">
+
+      {/* Animated headline. Tag is `h1` for proper document outline. */}
+      <AnimatedText
+        client:visible
+        as="h1"
+        className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-brand-dark"
+      >
+        {heading}
+      </AnimatedText>
+
+      {/* Animated subheading, with a slight delay to stagger after the headline */}
+      <AnimatedText
+        client:visible
+        as="p"
+        className="mt-6 text-lg md:text-xl text-brand-muted max-w-2xl mx-auto"
+        delay={0.15}
+      >
+        {subheading}
+      </AnimatedText>
+
+      {/* CTA buttons */}
+      <AnimatedText
+        client:visible
+        as="div"
+        className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center"
+        delay={0.3}
+      >
+        <a
+          href={primaryCta.href}
+          class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-brand-primary text-white font-medium transition-colors hover:bg-brand-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+        >
+          {primaryCta.label}
+        </a>
+        <a
+          href={secondaryCta.href}
+          class="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-brand-border text-brand-dark font-medium transition-colors hover:bg-brand-border/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+        >
+          {secondaryCta.label}
+        </a>
+      </AnimatedText>
+
+    </div>
+
+  </div>
+
+</section>

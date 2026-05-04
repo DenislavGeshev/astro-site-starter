@@ -1,0 +1,9 @@
+# robots.txt
+# Tells search engine crawlers what they can access.
+# Docs: https://developers.google.com/search/docs/crawling-indexing/robots/intro
+
+User-agent: *
+Allow: /
+
+# Sitemap location. Update the domain to match your real site URL.
+Sitemap: https://example.com/sitemap-index.xml

@@ -1,0 +1,71 @@
+---
+/**
+ * About page, example of a second page using the same layout.
+ *
+ * Demonstrates:
+ * - Setting page-specific SEO (title, description, breadcrumbs)
+ * - Using BreadcrumbList JSON-LD for SEO breadcrumb display in Google
+ * - Pre-rendering as static HTML
+ */
+
+export const prerender = true;
+
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import AnimatedText from '~/components/AnimatedText.tsx';
+
+import { SITE, absoluteUrl } from '~/lib/site';
+import { breadcrumbSchema } from '~/lib/jsonld';
+
+const breadcrumbs = breadcrumbSchema([
+  { name: 'Home', url: SITE.url },
+  { name: 'About', url: absoluteUrl('/about') },
+]);
+---
+
+<BaseLayout
+  title="About"
+  description={`About ${SITE.name}. ${SITE.tagline}`}
+  canonical="/about"
+  jsonLd={breadcrumbs}
+>
+
+  <section class="container-page py-20 md:py-28">
+
+    <div class="mx-auto max-w-2xl">
+
+      <AnimatedText
+        client:visible
+        as="h1"
+        className="text-4xl md:text-5xl font-bold text-brand-dark"
+      >
+        About this starter
+      </AnimatedText>
+
+      <AnimatedText
+        client:visible
+        as="p"
+        className="mt-6 text-lg text-brand-muted leading-relaxed"
+        delay={0.1}
+      >
+        This is an example second page. Replace this content with your real
+        about page. The structure is here for you: a centered prose layout
+        with animated text and proper SEO already set up.
+      </AnimatedText>
+
+      <AnimatedText
+        client:visible
+        as="p"
+        className="mt-4 text-lg text-brand-muted leading-relaxed"
+        delay={0.2}
+      >
+        Try asking Claude Code to update this page. For example:
+        "Please rewrite the About page to introduce my company [name]. We do
+        [what we do] for [who we serve]. Include a short story about why we
+        started, our values, and a call-to-action to contact us."
+      </AnimatedText>
+
+    </div>
+
+  </section>
+
+</BaseLayout>
